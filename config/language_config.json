@@ -1,0 +1,14 @@
+[
+    {
+        "name": "Python 3",
+        "compile": null,
+        "extension": "py",
+        "execute": "python3 %%filename%%.%%extension%%"
+    },
+    {
+        "name": "C++ 11",
+        "extension": "extension",
+        "compile": "g++ %%filename%%.%%extension%% -o executable",
+        "execute": "executable"
+    }
+]

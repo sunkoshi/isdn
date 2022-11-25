@@ -9,7 +9,7 @@ import (
 func TestFileManager(t *testing.T) {
 
 	fm := New(".")
-	fileName := []string{"new.txt"}
+	fileName := "new.txt"
 	data := []byte("hello")
 	err := fm.Put(fileName, data)
 

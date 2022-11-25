@@ -4,12 +4,15 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/orted-org/isdn/internal/file_manager"
 	"github.com/orted-org/isdn/internal/lang_handler"
 	"github.com/orted-org/isdn/pkg/command_executor"
 )
+
+const BASE_DIR = "/Users/hs/Documents/Acads/AcademicProject/Code/isdn/functions"
 
 func New(langHandler *lang_handler.LanguageHandler, params FunctionExecutorParams) (*FunctionExecutor, error) {
 	if !langHandler.IfConfigExists(params.Language) {
@@ -18,42 +21,20 @@ func New(langHandler *lang_handler.LanguageHandler, params FunctionExecutorParam
 
 	return &FunctionExecutor{
 		params:      params,
-		fileManger:  file_manager.New("./function"),
+		fileManger:  file_manager.New(""),
 		langHandler: langHandler,
 	}, nil
 }
 
-func (fe *FunctionExecutor) Provision() error {
-
-	// forming filename
-	fileName := fmt.Sprintf("code.%s", fe.langHandler.GetExtension(fe.params.Language))
-
-	// saving file in system
-	err := fe.fileManger.Put([]string{fe.params.RequestID, fileName}, []byte(fe.params.Code))
-	if err != nil {
-		return err
-	}
-
-	// handling file input
-	if fe.params.Input.InputFileName != "" {
-		// create file for input
-		err = fe.fileManger.Put([]string{fe.params.RequestID, fe.params.Input.InputFileName}, []byte(fe.params.Input.File))
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
 func (fe *FunctionExecutor) Compile(ctx context.Context) (string, error) {
-
-	compileCmd := fe.langHandler.GetCompileCmd("code", fe.params.Language)
+	compileCmd := fe.langHandler.GetCompileCmd(fe.workingDirectory, "code", fe.params.Language)
 
 	// if no compile required
 	if compileCmd == "" {
 		return "", nil
 	}
+
+	log.Println("compiling with", compileCmd)
 
 	// only taking stdErr and err
 	_, stdErr, err := command_executor.ExecuteContext(ctx, command_executor.SH_SHELL, compileCmd)
@@ -64,14 +45,20 @@ func (fe *FunctionExecutor) Compile(ctx context.Context) (string, error) {
 }
 
 func (fe *FunctionExecutor) Execute(ctx context.Context) (string, string, error) {
-	executionCmd := fe.langHandler.GetExecutionCmd("code", fe.params.Language)
+	executionCmd := fe.langHandler.GetExecutionCmd(fe.workingDirectory, "code", fe.params.Language)
+	log.Println("executing with", executionCmd)
 	return command_executor.ExecuteContext(ctx, command_executor.SH_SHELL, executionCmd)
 }
 
 func (fe *FunctionExecutor) Run(ctx context.Context) FunctionExecutionResult {
 	start := time.Now()
+
 	var result FunctionExecutionResult
-	if stdErr, err := fe.Compile(ctx); err != nil {
+
+	err := fe.Provision()
+	if err != nil {
+		result.Error = fmt.Sprintf("ERROR: could not provision resources\n%s", err.Error())
+	} else if stdErr, err := fe.Compile(ctx); err != nil {
 		// merging stdErr and err
 		result.Error = mergeError(err, stdErr)
 	} else {
@@ -81,6 +68,10 @@ func (fe *FunctionExecutor) Run(ctx context.Context) FunctionExecutionResult {
 			result.Error = mergeError(err, stdErr)
 		}
 		result.Output = stdOut
+	}
+	err = fe.Clean()
+	if err != nil {
+		result.Error = fmt.Sprintf("ERROR: could not clean provisioned resources\n%s", err.Error())
 	}
 	result.ExecutionTime = time.Since(start)
 	return result

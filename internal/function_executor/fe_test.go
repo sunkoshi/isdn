@@ -15,7 +15,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestFunctionExecutor(t *testing.T) {
-	file, err := os.ReadFile("./code.cpp")
+	file, err := os.ReadFile("./test_codes/code.cpp")
 	require.NoError(t, err)
 	require.NotEmpty(t, file)
 

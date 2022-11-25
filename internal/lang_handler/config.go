@@ -9,8 +9,8 @@ import (
 func getLanguageConfig() ([]LanguageConfig, error) {
 
 	var configs []LanguageConfig
-	fm := file_manager.New("../../config")
-	configJson, err := fm.Get([]string{"language_config.json"})
+	fm := file_manager.New("./config")
+	configJson, err := fm.Get("language_config.json")
 
 	if err != nil {
 		return configs, err

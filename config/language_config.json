@@ -7,8 +7,14 @@
     },
     {
         "name": "C++ 11",
-        "extension": "extension",
+        "extension": "cpp",
         "compile": "g++ %%filename%%.%%extension%% -o executable",
-        "execute": "executable"
+        "execute": "./executable"
+    },
+    {
+        "name": "Javascript",
+        "extension": "js",
+        "compile": "",
+        "execute": "node %%filename%%.%%extension%%"
     }
 ]

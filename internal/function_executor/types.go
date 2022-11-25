@@ -15,9 +15,11 @@ type FunctionExecutorParams struct {
 }
 
 type FunctionExecutor struct {
-	params      FunctionExecutorParams
-	fileManger  *file_manager.FileManager
-	langHandler *lang_handler.LanguageHandler
+	params           FunctionExecutorParams
+	workingDirectory string
+	codeFilePath     string
+	fileManger       *file_manager.FileManager
+	langHandler      *lang_handler.LanguageHandler
 }
 
 type FunctionInput struct {

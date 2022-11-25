@@ -1,6 +1,7 @@
 package lang_handler
 
 import (
+	"path"
 	"strings"
 )
 
@@ -35,28 +36,40 @@ func (lh *LanguageHandler) GetExtension(language string) string {
 	return lh.Configs[language].Extension
 }
 
-func (lh *LanguageHandler) GetCompileCmd(filename, language string) string {
+func (lh *LanguageHandler) GetCompileCmd(wDir, filename, language string) string {
+	filePath := path.Join(wDir, filename)
 	config := lh.Configs[language]
 	tmp := config.Compile
 	if strings.Contains(tmp, `%%filename%%`) {
-		tmp = strings.ReplaceAll(tmp, `%%filename%%`, filename)
+		tmp = strings.ReplaceAll(tmp, `%%filename%%`, filePath)
 	}
 
 	if strings.Contains(tmp, `%%extension%%`) {
 		tmp = strings.ReplaceAll(tmp, `%%extension%%`, config.Extension)
 	}
+
+	if strings.Contains(tmp, `%%path%%`) {
+		tmp = strings.ReplaceAll(tmp, `%%path%%`, wDir)
+	}
+
 	return tmp
 }
 
-func (lh *LanguageHandler) GetExecutionCmd(filename, language string) string {
+func (lh *LanguageHandler) GetExecutionCmd(wDir, filename, language string) string {
+	filePath := path.Join(wDir, filename)
 	config := lh.Configs[language]
 	tmp := config.Execute
 	if strings.Contains(tmp, `%%filename%%`) {
-		tmp = strings.ReplaceAll(tmp, `%%filename%%`, filename)
+		tmp = strings.ReplaceAll(tmp, `%%filename%%`, filePath)
 	}
 
 	if strings.Contains(tmp, `%%extension%%`) {
 		tmp = strings.ReplaceAll(tmp, `%%extension%%`, config.Extension)
 	}
+
+	if strings.Contains(tmp, `%%path%%`) {
+		tmp = strings.ReplaceAll(tmp, `%%path%%`, wDir)
+	}
+
 	return tmp
 }

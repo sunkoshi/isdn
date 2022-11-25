@@ -3,8 +3,8 @@ package function_executor
 import (
 	"time"
 
-	"github.com/orted-org/dambda/internal/file_manager"
-	"github.com/orted-org/dambda/internal/lang_handler"
+	"github.com/orted-org/isdn/internal/file_manager"
+	"github.com/orted-org/isdn/internal/lang_handler"
 )
 
 type FunctionExecutorParams struct {

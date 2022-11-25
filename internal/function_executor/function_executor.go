@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/orted-org/dambda/internal/file_manager"
-	"github.com/orted-org/dambda/internal/lang_handler"
-	"github.com/orted-org/dambda/pkg/command_executor"
+	"github.com/orted-org/isdn/internal/file_manager"
+	"github.com/orted-org/isdn/internal/lang_handler"
+	"github.com/orted-org/isdn/pkg/command_executor"
 )
 
 func New(langHandler *lang_handler.LanguageHandler, params FunctionExecutorParams) (*FunctionExecutor, error) {
@@ -54,6 +54,8 @@ func (fe *FunctionExecutor) Compile(ctx context.Context) (string, error) {
 	if compileCmd == "" {
 		return "", nil
 	}
+
+	// only taking stdErr and err
 	_, stdErr, err := command_executor.ExecuteContext(ctx, command_executor.SH_SHELL, compileCmd)
 	if err != nil {
 		return stdErr, err
@@ -70,10 +72,12 @@ func (fe *FunctionExecutor) Run(ctx context.Context) FunctionExecutionResult {
 	start := time.Now()
 	var result FunctionExecutionResult
 	if stdErr, err := fe.Compile(ctx); err != nil {
+		// merging stdErr and err
 		result.Error = mergeError(err, stdErr)
 	} else {
 		stdOut, stdErr, err := fe.Execute(ctx)
 		if err != nil {
+			// merging stdErr and err
 			result.Error = mergeError(err, stdErr)
 		}
 		result.Output = stdOut

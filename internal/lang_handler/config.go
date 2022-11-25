@@ -3,7 +3,7 @@ package lang_handler
 import (
 	"encoding/json"
 
-	"github.com/orted-org/dambda/internal/file_manager"
+	"github.com/orted-org/isdn/internal/file_manager"
 )
 
 func getLanguageConfig() ([]LanguageConfig, error) {

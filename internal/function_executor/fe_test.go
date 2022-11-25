@@ -6,7 +6,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/orted-org/dambda/internal/lang_handler"
+	"github.com/orted-org/isdn/internal/lang_handler"
 	"github.com/stretchr/testify/require"
 )
 

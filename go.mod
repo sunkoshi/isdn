@@ -1,4 +1,4 @@
-module github.com/orted-org/dambda
+module github.com/orted-org/isdn
 
 go 1.18
 

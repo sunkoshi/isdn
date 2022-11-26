@@ -26,10 +26,16 @@ func (fe *FunctionExecutor) Provision() error {
 		return err
 	}
 
+	extension := fe.langHandler.GetExtension(fe.params.Language)
+	templateExtension := extension
+	if fe.params.IsZip {
+		extension = "zip"
+	}
+
 	if fe.params.IsZip {
 		// unzip the zip file from staging to main area
 
-		tempZipPath := path.Join(BASE_DIR, "temp_zips", fe.params.RequestID+".zip")
+		tempZipPath := path.Join(BASE_DIR, "temp_zips", fmt.Sprintf("%s.%s", fe.params.RequestID, extension))
 		log.Println("creating new zip file at", tempZipPath)
 
 		b, err := io.ReadAll(fe.params.Code)
@@ -65,6 +71,34 @@ func (fe *FunctionExecutor) Provision() error {
 			return err
 		}
 	}
+
+	// copy template to working directory
+	template, err := os.ReadFile(path.Join(TEMPLATES_DIR, templateExtension, "template."+templateExtension))
+	if err != nil {
+		return err
+	}
+
+	entryFile, err := os.Create(path.Join(fe.workingDirectory, "code."+templateExtension))
+	if err != nil {
+		return err
+	}
+	defer entryFile.Close()
+	entryFile.Write(template)
+
+	// copy input to working directory
+	inputFile, err := os.Create(path.Join(fe.workingDirectory, "input.in"))
+	if err != nil {
+		return err
+	}
+	defer inputFile.Close()
+	inputFile.Write([]byte(fe.params.Input))
+
+	// create output file
+	outputFile, err := os.Create(path.Join(fe.workingDirectory, "output.out"))
+	if err != nil {
+		return err
+	}
+	defer outputFile.Close()
 
 	return nil
 }

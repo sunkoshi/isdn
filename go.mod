@@ -6,8 +6,7 @@ require github.com/stretchr/testify v1.8.0
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/eclipse/paho.mqtt.golang v1.4.2 // indirect
-	github.com/google/uuid v1.3.0
+	github.com/eclipse/paho.mqtt.golang v1.4.2
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	golang.org/x/net v0.0.0-20200425230154-ff2c4b7c35a0 // indirect

@@ -6,9 +6,7 @@ interface CodeEditorProps {
 }
 
 function CodeEditor(props: CodeEditorProps) {
-  const [code, setCode] = React.useState(
-    `function add(a, b) {\n  return a + b;\n}`
-  );
+  const [code, setCode] = React.useState(``);
   return (
     <div>
       <TextAreaCodeEditor

@@ -12,7 +12,7 @@ import (
 	"github.com/orted-org/isdn/pkg/command_executor"
 )
 
-const BASE_DIR = "/Users/hs/Documents/Acads/AcademicProject/Code/isdn/functions"
+const BASE_DIR = "/home/hs/Documents/Projects/isdn/functions"
 
 func New(langHandler *lang_handler.LanguageHandler, params FunctionExecutorParams) (*FunctionExecutor, error) {
 	if !langHandler.IfConfigExists(params.Language) {

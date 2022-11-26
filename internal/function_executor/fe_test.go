@@ -15,7 +15,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestFunctionExecutor(t *testing.T) {
-	file, err := os.ReadFile("./test_codes/code.cpp")
+	file, err := os.Open("./test_codes/code.cpp")
 	require.NoError(t, err)
 	require.NotEmpty(t, file)
 
@@ -25,7 +25,7 @@ func TestFunctionExecutor(t *testing.T) {
 
 	fe, err := New(lh, FunctionExecutorParams{
 		RequestID: "1",
-		Code:      string(file),
+		Code:      file,
 		Language:  "C++ 11",
 		Input:     FunctionInput{},
 	})

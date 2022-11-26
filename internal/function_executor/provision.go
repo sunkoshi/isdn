@@ -1,40 +1,67 @@
 package function_executor
 
 import (
+	"archive/zip"
+	"errors"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"path"
+	"path/filepath"
+	"strings"
+
+	"github.com/orted-org/isdn/util"
 )
 
 func (fe *FunctionExecutor) Provision() error {
 
 	log.Println("provisioning resources for request id:", fe.params.RequestID)
+
 	// create dir
 	fe.workingDirectory = path.Join(BASE_DIR, fe.params.RequestID)
-
 	log.Println("creating directory at path", fe.workingDirectory)
 	err := os.MkdirAll(fe.workingDirectory, os.ModePerm)
 	if err != nil {
 		return err
 	}
 
-	// forming filename
-	fe.codeFilePath = path.Join(fe.workingDirectory, fmt.Sprintf("code.%s", fe.langHandler.GetExtension(fe.params.Language)))
-	log.Printf("creating FILE=%s in DIR=%s\n", fe.codeFilePath, fe.workingDirectory)
+	if fe.params.IsZip {
+		// unzip the zip file from staging to main area
 
-	// saving file in system
-	err = fe.fileManger.Put(fe.codeFilePath, []byte(fe.params.Code))
-	if err != nil {
-		log.Printf("could not save file")
-		return err
-	}
+		tempZipPath := path.Join(BASE_DIR, "temp_zips", fe.params.RequestID+".zip")
+		log.Println("creating new zip file at", tempZipPath)
 
-	// handling file input
-	if fe.params.Input.InputFileName != "" {
-		// create file for input
-		err = fe.fileManger.Put(path.Join(fe.params.RequestID, fe.params.Input.InputFileName), []byte(fe.params.Input.File))
+		b, err := io.ReadAll(fe.params.Code)
 		if err != nil {
+			return util.MergeErrors(errors.New("could not read zip file"), err)
+		}
+
+		// putting the file in temp area
+		err = fe.fileManger.Put(tempZipPath, b)
+		if err != nil {
+			return util.MergeErrors(errors.New("could not save zip file"), err)
+		}
+
+		// moving the file to main area
+		err = unzip(tempZipPath, fe.workingDirectory)
+		if err != nil {
+			return util.MergeErrors(errors.New("could not unzip file"), err)
+		}
+		log.Println("unzipped file at", fe.workingDirectory)
+	} else {
+		// just move code from staging to main area
+		fe.codeFilePath = path.Join(fe.workingDirectory, fmt.Sprintf("code.%s", fe.langHandler.GetExtension(fe.params.Language)))
+		log.Printf("creating FILE=%s in DIR=%s\n", fe.codeFilePath, fe.workingDirectory)
+
+		// saving file in system
+		b, err := io.ReadAll(fe.params.Code)
+		if err != nil {
+			return errors.New("could not read zip file")
+		}
+		err = fe.fileManger.Put(fe.codeFilePath, b)
+		if err != nil {
+			log.Printf("could not save file")
 			return err
 		}
 	}
@@ -47,6 +74,55 @@ func (fe *FunctionExecutor) Clean() error {
 	err := os.RemoveAll(fe.workingDirectory)
 	if err != nil {
 		return err
+	}
+
+	if fe.params.IsZip {
+		err := os.RemoveAll(path.Join(BASE_DIR, "temp_zips", fe.params.RequestID+".zip"))
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func unzip(zipPath string, dst string) error {
+
+	archive, err := zip.OpenReader(zipPath)
+	if err != nil {
+		panic(err)
+	}
+	defer archive.Close()
+
+	for _, f := range archive.File {
+		filePath := filepath.Join(dst, f.Name)
+		if !strings.HasPrefix(filePath, filepath.Clean(dst)+string(os.PathSeparator)) {
+			return errors.New("invalid file path")
+		}
+		if f.FileInfo().IsDir() {
+			os.MkdirAll(filePath, os.ModePerm)
+			continue
+		}
+
+		if err := os.MkdirAll(filepath.Dir(filePath), os.ModePerm); err != nil {
+			panic(err)
+		}
+
+		dstFile, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
+		if err != nil {
+			return err
+		}
+
+		fileInArchive, err := f.Open()
+		if err != nil {
+			return err
+		}
+
+		if _, err := io.Copy(dstFile, fileInArchive); err != nil {
+			return err
+		}
+
+		dstFile.Close()
+		fileInArchive.Close()
 	}
 	return nil
 }

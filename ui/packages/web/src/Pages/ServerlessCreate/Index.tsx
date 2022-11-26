@@ -4,7 +4,6 @@ import {
   FileButton,
   Group,
   Header,
-  Navbar,
   NumberInput,
   Select,
   TextInput,
@@ -12,6 +11,7 @@ import {
   Divider,
 } from "@mantine/core";
 import React, { useState } from "react";
+import NavigationBar from "../../Organs/NavigationBar";
 import CodeEditor from "./CodeEditor";
 
 function ServerlessIndex() {
@@ -20,11 +20,7 @@ function ServerlessIndex() {
   return (
     <AppShell
       padding="md"
-      navbar={
-        <Navbar width={{ base: 300 }} height={"100vh"} p="xs">
-          {/* Navbar content */}
-        </Navbar>
-      }
+      navbar={<NavigationBar />}
       header={
         <Header height={60} p="xs">
           {/* Header content */}

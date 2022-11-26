@@ -1,5 +1,9 @@
-import React, { useState } from "react";
+import ServerlessIndex from "./Pages/ServerlessCreate/Index";
 
 export default function App() {
-  return <p>Hello</p>;
+  return (
+    <div>
+      <ServerlessIndex />
+    </div>
+  );
 }

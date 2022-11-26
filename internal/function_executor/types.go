@@ -9,11 +9,11 @@ import (
 )
 
 type FunctionExecutorParams struct {
-	RequestID string        `json:"request_id"`
-	Code      io.Reader     `json:"code"`
-	IsZip     bool          `json:"is_zip"`
-	Language  string        `json:"lang"`
-	Input     FunctionInput `json:"input"`
+	RequestID string    `json:"request_id"`
+	Code      io.Reader `json:"code"`
+	IsZip     bool      `json:"is_zip"`
+	Language  string    `json:"lang"`
+	Input     string    `json:"input"`
 }
 
 type FunctionExecutor struct {
@@ -23,16 +23,9 @@ type FunctionExecutor struct {
 	fileManger       *file_manager.FileManager
 	langHandler      *lang_handler.LanguageHandler
 }
-
-type FunctionInput struct {
-	File          string `json:"file"`
-	InputFileName string `json:"file_name"`
-	Stdin         string `json:"stdin"`
-	CLA           string `json:"cla"`
-}
-
 type FunctionExecutionResult struct {
 	ExecutionTime time.Duration `json:"execution_time"`
-	Output        string        `json:"output"`
+	Stdout        string        `json:"stdout"`
 	Error         string        `json:"error"`
+	Output        string        `json:"output"`
 }

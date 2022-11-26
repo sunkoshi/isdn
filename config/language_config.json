@@ -8,8 +8,8 @@
     {
         "name": "C++ 11",
         "extension": "cpp",
-        "compile": "g++ %%filename%%.%%extension%% -o %%path%%/executable",
-        "execute": "%%path%%/executable"
+        "compile": "pwd && g++ %%path%%/index.cpp %%filename%%.%%extension%% -o %%path%%/executable",
+        "execute": "%%path%%/executable %%path%%/input.in %%path%%/output.out"
     },
     {
         "name": "Javascript",

@@ -5,14 +5,18 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"os"
+	"path"
 	"time"
 
 	"github.com/orted-org/isdn/internal/file_manager"
 	"github.com/orted-org/isdn/internal/lang_handler"
 	"github.com/orted-org/isdn/pkg/command_executor"
+	"github.com/orted-org/isdn/util"
 )
 
 const BASE_DIR = "/home/hs/Documents/Projects/isdn/functions"
+const TEMPLATES_DIR = "/home/hs/Documents/Projects/isdn/templates"
 
 func New(langHandler *lang_handler.LanguageHandler, params FunctionExecutorParams) (*FunctionExecutor, error) {
 	if !langHandler.IfConfigExists(params.Language) {
@@ -51,29 +55,43 @@ func (fe *FunctionExecutor) Execute(ctx context.Context) (string, string, error)
 }
 
 func (fe *FunctionExecutor) Run(ctx context.Context) FunctionExecutionResult {
-	start := time.Now()
-
 	var result FunctionExecutionResult
+	start := time.Now()
+	defer func() {
+		log.Println("cleaning resources")
+		err := fe.Clean()
+		if err != nil {
+			result.Error = fmt.Sprintf("ERROR: could not clean provisioned resources\n%s", err.Error())
+		}
+		result.ExecutionTime = time.Since(start)
+	}()
 
 	err := fe.Provision()
 	if err != nil {
 		result.Error = fmt.Sprintf("ERROR: could not provision resources\n%s", err.Error())
-	} else if stdErr, err := fe.Compile(ctx); err != nil {
+		return result
+	}
+
+	if stdErr, err := fe.Compile(ctx); err != nil {
 		// merging stdErr and err
 		result.Error = mergeError(err, stdErr)
-	} else {
-		stdOut, stdErr, err := fe.Execute(ctx)
-		if err != nil {
-			// merging stdErr and err
-			result.Error = mergeError(err, stdErr)
-		}
-		result.Output = stdOut
+		return result
 	}
-	err = fe.Clean()
+
+	stdOut, stdErr, err := fe.Execute(ctx)
 	if err != nil {
-		result.Error = fmt.Sprintf("ERROR: could not clean provisioned resources\n%s", err.Error())
+		// merging stdErr and err
+		result.Error = mergeError(err, stdErr)
+		return result
 	}
-	result.ExecutionTime = time.Since(start)
+	result.Stdout = stdOut
+	functionOutput, err := os.ReadFile(path.Join(fe.workingDirectory, "output.out"))
+	if err != nil {
+		result.Error = util.MergeErrors(errors.New("could not extract output"), err).Error()
+		return result
+	}
+	result.Output = string(functionOutput)
+
 	return result
 }
 

@@ -27,7 +27,7 @@ func TestFunctionExecutor(t *testing.T) {
 		RequestID: "1",
 		Code:      file,
 		Language:  "C++ 11",
-		Input:     FunctionInput{},
+		Input:     "",
 	})
 	require.NoError(t, err)
 	require.NotEmpty(t, fe)

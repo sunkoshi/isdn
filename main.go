@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	file, err := os.Open("./test_codes/jsm/jsm.zip")
+	file, err := os.Open("./test_codes/cppm/cppm.zip")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -24,9 +24,9 @@ func main() {
 	fe, err := function_executor.New(lh, function_executor.FunctionExecutorParams{
 		RequestID: "1",
 		Code:      file,
-		Language:  "Javascript",
+		Language:  "C++ 11",
 		IsZip:     true,
-		Input:     function_executor.FunctionInput{},
+		Input:     "Himanshu",
 	})
 	if err != nil {
 		log.Fatal(err)
@@ -36,5 +36,8 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(output)
+	fmt.Println("Error:", output.Error)
+	fmt.Println("Stdout:", output.Stdout)
+	fmt.Println("Output:", output.Output)
+	fmt.Println("Execution Time:", output.ExecutionTime)
 }

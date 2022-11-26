@@ -1,6 +1,7 @@
 package function_executor
 
 import (
+	"io"
 	"time"
 
 	"github.com/orted-org/isdn/internal/file_manager"
@@ -9,7 +10,8 @@ import (
 
 type FunctionExecutorParams struct {
 	RequestID string        `json:"request_id"`
-	Code      string        `json:"code"`
+	Code      io.Reader     `json:"code"`
+	IsZip     bool          `json:"is_zip"`
 	Language  string        `json:"lang"`
 	Input     FunctionInput `json:"input"`
 }

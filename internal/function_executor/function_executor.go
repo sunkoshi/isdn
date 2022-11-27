@@ -41,7 +41,7 @@ func (fe *FunctionExecutor) Compile(ctx context.Context) (string, error) {
 	log.Println("compiling with", compileCmd)
 
 	// only taking stdErr and err
-	_, stdErr, err := command_executor.ExecuteContext(ctx, command_executor.SH_SHELL, compileCmd)
+	_, stdErr, err := command_executor.ExecuteContext(ctx, fe.workingDirectory, compileCmd)
 	if err != nil {
 		return stdErr, err
 	}
@@ -51,7 +51,7 @@ func (fe *FunctionExecutor) Compile(ctx context.Context) (string, error) {
 func (fe *FunctionExecutor) Execute(ctx context.Context) (string, string, error) {
 	executionCmd := fe.langHandler.GetExecutionCmd(fe.workingDirectory, "code", fe.params.Language)
 	log.Println("executing with", executionCmd)
-	return command_executor.ExecuteContext(ctx, command_executor.SH_SHELL, executionCmd)
+	return command_executor.ExecuteContext(ctx, fe.workingDirectory, executionCmd)
 }
 
 func (fe *FunctionExecutor) Run(ctx context.Context) FunctionExecutionResult {

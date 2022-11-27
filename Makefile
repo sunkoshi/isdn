@@ -3,7 +3,7 @@ test:
 dev:
 	go run *.go
 demo:
-	rm -rf test_codes/jsm/jsm.zip
-	cd ./test_codes/jsm/ && zip -r jsm.zip *
+	rm -rf test_codes/pym/pym.zip
+	cd ./test_codes/pym/ && zip -r pym.zip *
 	go run *.go
 	

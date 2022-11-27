@@ -7,7 +7,7 @@
 using namespace std;
 int main(int argc, char **argv)
 {
-    int fd = open(argv[1], O_RDWR);
+    int fd = open("input.in", O_RDWR);
     string s = "";
     while (true)
     {
@@ -22,6 +22,6 @@ int main(int argc, char **argv)
     close(fd);
 
     s = handle(s);
-    fd = open(argv[2], O_RDWR);
+    fd = open("output.out", O_RDWR);
     write(fd, s.c_str(), s.size());
 }

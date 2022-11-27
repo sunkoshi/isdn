@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	file, err := os.Open("./test_codes/cppm/cppm.zip")
+	file, err := os.Open("./test_codes/jsm/jsm.zip")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -24,9 +24,9 @@ func main() {
 	fe, err := function_executor.New(lh, function_executor.FunctionExecutorParams{
 		RequestID: "1",
 		Code:      file,
-		Language:  "C++ 11",
+		Language:  "Javascript",
 		IsZip:     true,
-		Input:     "Himanshu",
+		Input:     "{}",
 	})
 	if err != nil {
 		log.Fatal(err)

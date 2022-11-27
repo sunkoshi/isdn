@@ -24,4 +24,5 @@ int main(int argc, char **argv)
     s = handle(s);
     fd = open("output.out", O_RDWR);
     write(fd, s.c_str(), s.size());
+    close(fd);
 }

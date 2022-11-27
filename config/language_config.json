@@ -1,7 +1,7 @@
 [
     {
         "name": "Python 3",
-        "compile": null,
+        "compile": "pip3 install -r requirements.txt",
         "extension": "py",
         "execute": "python3 %%filename%%.%%extension%%"
     },

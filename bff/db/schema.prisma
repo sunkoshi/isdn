@@ -22,14 +22,26 @@ model Users {
 }
 
 model Functions {
-    id         Int      @id @default(autoincrement())
-    creator    Users    @relation(fields: [creator_id], references: [user_id])
-    creator_id Int
-    name       String
-    language   String
-    timeout    Int
-    file_ref   String
-    created_at DateTime @default(now())
+    id             Int            @id @default(autoincrement())
+    creator        Users          @relation(fields: [creator_id], references: [user_id])
+    creator_id     Int
+    name           String
+    language       String
+    timeout        Int
+    output_type    String         @default("json")
+    created_at     DateTime       @default(now())
+    FunctionOutput FunctionCall[]
 
     @@map("functions")
+}
+
+model FunctionCall {
+    id          Int       @id @default(autoincrement())
+    function    Functions @relation(fields: [function_id], references: [id])
+    function_id Int
+    output      String
+    cost        Int       @default(0)
+    created_at  DateTime  @default(now())
+
+    @@map("function_outputs")
 }

@@ -10,17 +10,17 @@ import (
 )
 
 const createFunction = `-- name: CreateFunction :one
-INSERT INTO functions(creator_id, name, language, timeout, file_ref)
+INSERT INTO functions(creator_id, name, language, timeout, output_type)
 VALUES (?, ?, ?, ?, ?)
-RETURNING id, creator_id, name, language, timeout, file_ref, created_at
+RETURNING id, creator_id, name, language, timeout, output_type, created_at
 `
 
 type CreateFunctionParams struct {
-	CreatorID int64  `json:"creator_id"`
-	Name      string `json:"name"`
-	Language  string `json:"language"`
-	Timeout   int64  `json:"timeout"`
-	FileRef   string `json:"file_ref"`
+	CreatorID  int64  `json:"creator_id"`
+	Name       string `json:"name"`
+	Language   string `json:"language"`
+	Timeout    int64  `json:"timeout"`
+	OutputType string `json:"output_type"`
 }
 
 func (q *Queries) CreateFunction(ctx context.Context, arg CreateFunctionParams) (*Function, error) {
@@ -29,7 +29,7 @@ func (q *Queries) CreateFunction(ctx context.Context, arg CreateFunctionParams) 
 		arg.Name,
 		arg.Language,
 		arg.Timeout,
-		arg.FileRef,
+		arg.OutputType,
 	)
 	var i Function
 	err := row.Scan(
@@ -38,7 +38,7 @@ func (q *Queries) CreateFunction(ctx context.Context, arg CreateFunctionParams) 
 		&i.Name,
 		&i.Language,
 		&i.Timeout,
-		&i.FileRef,
+		&i.OutputType,
 		&i.CreatedAt,
 	)
 	return &i, err
@@ -61,7 +61,7 @@ func (q *Queries) DeleteFunctionsByIdAndCreatorId(ctx context.Context, arg Delet
 }
 
 const getFunctionsByCreatorId = `-- name: GetFunctionsByCreatorId :many
-SELECT id, creator_id, name, language, timeout, file_ref, created_at
+SELECT id, creator_id, name, language, timeout, output_type, created_at
 FROM functions
 WHERE creator_id = ?
 `
@@ -81,7 +81,7 @@ func (q *Queries) GetFunctionsByCreatorId(ctx context.Context, creatorID int64) 
 			&i.Name,
 			&i.Language,
 			&i.Timeout,
-			&i.FileRef,
+			&i.OutputType,
 			&i.CreatedAt,
 		); err != nil {
 			return nil, err
@@ -98,7 +98,7 @@ func (q *Queries) GetFunctionsByCreatorId(ctx context.Context, creatorID int64) 
 }
 
 const getFunctionsById = `-- name: GetFunctionsById :one
-SELECT id, creator_id, name, language, timeout, file_ref, created_at
+SELECT id, creator_id, name, language, timeout, output_type, created_at
 FROM functions
 WHERE id = ?
 `
@@ -112,7 +112,7 @@ func (q *Queries) GetFunctionsById(ctx context.Context, id int64) (*Function, er
 		&i.Name,
 		&i.Language,
 		&i.Timeout,
-		&i.FileRef,
+		&i.OutputType,
 		&i.CreatedAt,
 	)
 	return &i, err

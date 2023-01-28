@@ -1,5 +1,5 @@
 -- name: CreateFunction :one
-INSERT INTO functions(creator_id, name, language, timeout, file_ref)
+INSERT INTO functions(creator_id, name, language, timeout, output_type)
 VALUES (?, ?, ?, ?, ?)
 RETURNING *;
 -- name: GetFunctionsByCreatorId :many

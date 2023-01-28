@@ -9,13 +9,21 @@ import (
 )
 
 type Function struct {
-	ID        int64     `json:"id"`
-	CreatorID int64     `json:"creator_id"`
-	Name      string    `json:"name"`
-	Language  string    `json:"language"`
-	Timeout   int64     `json:"timeout"`
-	FileRef   string    `json:"file_ref"`
-	CreatedAt time.Time `json:"created_at"`
+	ID         int64     `json:"id"`
+	CreatorID  int64     `json:"creator_id"`
+	Name       string    `json:"name"`
+	Language   string    `json:"language"`
+	Timeout    int64     `json:"timeout"`
+	OutputType string    `json:"output_type"`
+	CreatedAt  time.Time `json:"created_at"`
+}
+
+type FunctionOutput struct {
+	ID         int64     `json:"id"`
+	FunctionID int64     `json:"function_id"`
+	Output     string    `json:"output"`
+	Cost       int64     `json:"cost"`
+	CreatedAt  time.Time `json:"created_at"`
 }
 
 type User struct {

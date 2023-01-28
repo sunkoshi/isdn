@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
+	_ "github.com/mattn/go-sqlite3"
 	db "github.com/orted-org-isdn-bff/db/sqlc"
 )
 
@@ -28,10 +29,6 @@ func initCleaner(app *App) {
 		app.logger.Println("closing db connection")
 		app.store.Close()
 
-		// waiting to gracefully shutdown all the processes
-		app.logger.Println("quitting application in 3s")
-		time.Sleep(time.Second * 3)
-
 		// finally shutting down the server
 		app.logger.Println("shutting down the http server")
 		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
@@ -43,7 +40,7 @@ func initCleaner(app *App) {
 func initDB(app *App) {
 	var err error
 
-	tDB, err := sql.Open("sqlite3", "../../db.db")
+	tDB, err := sql.Open("sqlite3", "./db/dev.db")
 	if err != nil {
 		panic(err)
 	}

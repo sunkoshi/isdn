@@ -11,6 +11,7 @@ import (
 type App struct {
 	// db store
 	store *db.Queries
+	kv    map[string]string
 
 	//logger
 	logger *log.Logger
@@ -35,6 +36,7 @@ func main() {
 	app := &App{
 		quitters: make(map[string]chan struct{}),
 		logger:   lo,
+		kv:       map[string]string{},
 	}
 
 	initDB(app)

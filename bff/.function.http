@@ -1,0 +1,21 @@
+@token=GCoBeetMCFHHxVjDBqzgcBgRYkyhPcxR
+
+### Create Function
+POST http://localhost:4000/function
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "creator_id":1,
+    "name":"My Function",
+    "language":"js",
+    "timeout":60
+}
+
+### Get Function
+GET  http://localhost:4000/function
+Authorization: Bearer {{token}}
+
+### Delete Function
+DELETE http://localhost:4000/function?id=2
+Authorization: Bearer {{token}}

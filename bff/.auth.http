@@ -1,0 +1,33 @@
+
+@email = itsmehs07@gmail.com
+@password=mypass123
+@token=GCoBeetMCFHHxVjDBqzgcBgRYkyhPcxR
+
+### Create User
+POST http://localhost:4000/auth
+Content-Type: application/json
+
+{
+    "email":"{{email}}",
+    "type":"customer",
+    "password":"{{password}}"
+}
+
+### Login
+POST http://localhost:4000/auth/login
+Content-Type: application/json
+
+{
+    "email":"{{email}}",
+    "password":"{{password}}"
+}
+
+### If Login
+GET http://localhost:4000/auth
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+
+### Logout
+DELETE http://localhost:4000/auth
+Authorization: Bearer {{token}}

@@ -1,9 +1,7 @@
 import {
-  AppShell,
   Button,
   FileButton,
   Group,
-  Header,
   NumberInput,
   Select,
   TextInput,
@@ -11,30 +9,13 @@ import {
   Divider,
 } from "@mantine/core";
 import React, { useState } from "react";
-import NavigationBar from "../../Organs/NavigationBar";
 import CodeEditor from "./CodeEditor";
 
 function ServerlessIndex() {
   const [file, setFile] = useState<File | null>(null);
   const [runtime, setRuntime] = useState("js");
   return (
-    <AppShell
-      padding="md"
-      navbar={<NavigationBar />}
-      header={
-        <Header height={60} p="xs">
-          {/* Header content */}
-        </Header>
-      }
-      styles={(theme) => ({
-        main: {
-          backgroundColor:
-            theme.colorScheme === "dark"
-              ? theme.colors.dark[8]
-              : theme.colors.gray[1],
-        },
-      })}
-    >
+    <div>
       <div
         style={{
           display: "flex",
@@ -90,7 +71,7 @@ function ServerlessIndex() {
         )}
         <Button>Create Serverless Load</Button>
       </div>
-    </AppShell>
+    </div>
   );
 }
 

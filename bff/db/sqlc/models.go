@@ -9,11 +9,20 @@ import (
 	"time"
 )
 
-type User struct {
-	UserID    int64          `json:"user_id"`
-	Email     string         `json:"email"`
-	Password  string         `json:"password"`
-	Type      string         `json:"type"`
+type Function struct {
+	ID        int64          `json:"id"`
+	CreatorID int64          `json:"creator_id"`
+	Name      sql.NullString `json:"name"`
+	Language  string         `json:"language"`
+	Timeout   int64          `json:"timeout"`
+	FileRef   string         `json:"file_ref"`
 	CreatedAt time.Time      `json:"created_at"`
-	SubjectID sql.NullString `json:"subject_id"`
+}
+
+type User struct {
+	UserID    int64     `json:"user_id"`
+	Email     string    `json:"email"`
+	Password  string    `json:"password"`
+	Type      string    `json:"type"`
+	CreatedAt time.Time `json:"created_at"`
 }

@@ -24,6 +24,12 @@ func New(db DBTX) *Queries {
 func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	q := Queries{db: db}
 	var err error
+	if q.createFunctionStmt, err = db.PrepareContext(ctx, createFunction); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateFunction: %w", err)
+	}
+	if q.getHealthStmt, err = db.PrepareContext(ctx, getHealth); err != nil {
+		return nil, fmt.Errorf("error preparing query GetHealth: %w", err)
+	}
 	if q.getUserStmt, err = db.PrepareContext(ctx, getUser); err != nil {
 		return nil, fmt.Errorf("error preparing query GetUser: %w", err)
 	}
@@ -32,6 +38,16 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 
 func (q *Queries) Close() error {
 	var err error
+	if q.createFunctionStmt != nil {
+		if cerr := q.createFunctionStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createFunctionStmt: %w", cerr)
+		}
+	}
+	if q.getHealthStmt != nil {
+		if cerr := q.getHealthStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getHealthStmt: %w", cerr)
+		}
+	}
 	if q.getUserStmt != nil {
 		if cerr := q.getUserStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getUserStmt: %w", cerr)
@@ -74,15 +90,19 @@ func (q *Queries) queryRow(ctx context.Context, stmt *sql.Stmt, query string, ar
 }
 
 type Queries struct {
-	db          DBTX
-	tx          *sql.Tx
-	getUserStmt *sql.Stmt
+	db                 DBTX
+	tx                 *sql.Tx
+	createFunctionStmt *sql.Stmt
+	getHealthStmt      *sql.Stmt
+	getUserStmt        *sql.Stmt
 }
 
 func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 	return &Queries{
-		db:          tx,
-		tx:          tx,
-		getUserStmt: q.getUserStmt,
+		db:                 tx,
+		tx:                 tx,
+		createFunctionStmt: q.createFunctionStmt,
+		getHealthStmt:      q.getHealthStmt,
+		getUserStmt:        q.getUserStmt,
 	}
 }

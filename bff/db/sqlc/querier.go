@@ -9,6 +9,8 @@ import (
 )
 
 type Querier interface {
+	CreateFunction(ctx context.Context, arg CreateFunctionParams) (*Function, error)
+	GetHealth(ctx context.Context) (interface{}, error)
 	GetUser(ctx context.Context) (*User, error)
 }
 

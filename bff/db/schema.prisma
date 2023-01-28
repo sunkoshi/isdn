@@ -11,12 +11,25 @@ datasource db {
 }
 
 model Users {
-    user_id    Int      @id @default(autoincrement())
-    email      String   @unique
+    user_id    Int         @id @default(autoincrement())
+    email      String      @unique
     password   String
     type       String
-    created_at DateTime @default(now())
-    subject_id String?
+    created_at DateTime    @default(now())
+    Functions  Functions[]
 
     @@map("users")
+}
+
+model Functions {
+    id         Int      @id @default(autoincrement())
+    creator    Users    @relation(fields: [creator_id], references: [user_id])
+    creator_id Int
+    name       String?
+    language   String
+    timeout    Int
+    file_ref   String
+    created_at DateTime @default(now())
+
+    @@map("functions")
 }

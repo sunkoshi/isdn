@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
+	db "github.com/orted-org-isdn-bff/db/sqlc"
 )
 
 // function to cleanup the open resources
@@ -39,27 +40,24 @@ func initCleaner(app *App) {
 	}()
 }
 
-func initDB() (db.Store, error) {
+func initDB(app *App) {
 	var err error
 
-	// TODO: pass db info from config
 	tDB, err := sql.Open("sqlite3", "../../db.db")
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
 	q, err := db.Prepare(context.Background(), tDB)
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
-
-	return q, nil
+	app.store = q
 }
 
 func initServer(app *App) {
 	r := chi.NewRouter()
 	initHandler(app, r)
 
-	// TODO: send address from config file
 	srv := http.Server{
 		Addr:    "localhost:4000",
 		Handler: r,

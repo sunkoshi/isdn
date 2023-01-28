@@ -5,25 +5,15 @@ import (
 	"net/http"
 	"os"
 
-	db "github.com/orted-org/vyoza/db/dao"
-	authservice "github.com/orted-org/vyoza/internal/auth_service"
-	configstore "github.com/orted-org/vyoza/internal/config_store"
-	"github.com/orted-org/vyoza/internal/vault"
-	"github.com/orted-org/vyoza/internal/watcher"
+	db "github.com/orted-org-isdn-bff/db/sqlc"
 )
 
 type App struct {
 	// db store
-	store db.Store
+	store *db.Queries
 
 	//logger
 	logger *log.Logger
-
-	// uptime and ssl watcher
-	watcher *watcher.Watcher
-
-	// config store
-	configStore *configstore.Config
 
 	// service quitter signal channel map
 	quitters map[string]chan struct{}
@@ -33,12 +23,6 @@ type App struct {
 
 	// http server
 	srv *http.Server
-
-	//vault
-	vault *vault.Vault
-
-	// authService
-	authService *authservice.AuthService
 }
 
 var (
@@ -47,24 +31,14 @@ var (
 )
 
 func main() {
-	store, err := initDB()
-	if err != nil {
-		log.Fatal("error initializing db store", err)
-		return
-	}
+
 	app := &App{
-		store:    store,
-		watcher:  watcher.New(),
 		quitters: make(map[string]chan struct{}),
 		logger:   lo,
 	}
 
+	initDB(app)
 	initServer(app)
-	// go initWatcher(app)
-
-	initVault(app)
-	initConfigStore(app)
-	initAuthService(app)
 	go initCleaner(app)
 
 	log.Fatal(app.srv.ListenAndServe())

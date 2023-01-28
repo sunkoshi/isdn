@@ -6,7 +6,7 @@ import ListLCIndex from "./Pages/ListSL/Index";
 import ServerlessIndex from "./Pages/ServerlessCreate/Index";
 
 export default function App() {
-  const {appStore} = useStores();
+  const { appStore } = useStores();
   return (
     <AppShell
       padding="md"
@@ -21,17 +21,16 @@ export default function App() {
           backgroundColor:
             theme.colorScheme === "dark"
               ? theme.colors.dark[8]
-              : theme.colors.gray[1],
-        },
+              : theme.colors.gray[1]
+        }
       })}
     >
       <Observer>
-        {()=>{
-          if(appStore.navigationState===0) return <ServerlessIndex />
-          return <ListLCIndex/>
+        {() => {
+          if (appStore.navigationState === 0) return <ServerlessIndex />;
+          return <ListLCIndex />;
         }}
       </Observer>
-      
     </AppShell>
   );
 }

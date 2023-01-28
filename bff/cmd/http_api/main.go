@@ -6,24 +6,17 @@ import (
 	"os"
 
 	db "github.com/orted-org-isdn-bff/db/sqlc"
+	"github.com/orted-org-isdn-bff/pkg/object_store"
 )
 
 type App struct {
-	// db store
-	store *db.Queries
-	kv    map[string]string
-
-	//logger
-	logger *log.Logger
-
-	// service quitter signal channel map
-	quitters map[string]chan struct{}
-
-	// channel for os signals
-	osSignal chan os.Signal
-
-	// http server
-	srv *http.Server
+	store       *db.Queries
+	kv          map[string]string
+	objectStore *object_store.ObjectStore
+	logger      *log.Logger
+	quitters    map[string]chan struct{}
+	osSignal    chan os.Signal
+	srv         *http.Server
 }
 
 var (
@@ -40,6 +33,7 @@ func main() {
 	}
 
 	initDB(app)
+	initObjectStore(app)
 	initServer(app)
 	go initCleaner(app)
 

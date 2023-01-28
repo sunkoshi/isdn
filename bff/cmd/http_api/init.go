@@ -11,6 +11,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	_ "github.com/mattn/go-sqlite3"
 	db "github.com/orted-org-isdn-bff/db/sqlc"
+	"github.com/orted-org-isdn-bff/pkg/object_store"
 )
 
 // function to cleanup the open resources
@@ -49,6 +50,13 @@ func initDB(app *App) {
 		panic(err)
 	}
 	app.store = q
+}
+func initObjectStore(app *App) {
+	os, err := object_store.NewObjectStore("./code_repo")
+	if err != nil {
+		panic(err)
+	}
+	app.objectStore = os
 }
 
 func initServer(app *App) {

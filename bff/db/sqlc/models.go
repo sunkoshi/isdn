@@ -5,18 +5,17 @@
 package db
 
 import (
-	"database/sql"
 	"time"
 )
 
 type Function struct {
-	ID        int64          `json:"id"`
-	CreatorID int64          `json:"creator_id"`
-	Name      sql.NullString `json:"name"`
-	Language  string         `json:"language"`
-	Timeout   int64          `json:"timeout"`
-	FileRef   string         `json:"file_ref"`
-	CreatedAt time.Time      `json:"created_at"`
+	ID        int64     `json:"id"`
+	CreatorID int64     `json:"creator_id"`
+	Name      string    `json:"name"`
+	Language  string    `json:"language"`
+	Timeout   int64     `json:"timeout"`
+	FileRef   string    `json:"file_ref"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 type User struct {

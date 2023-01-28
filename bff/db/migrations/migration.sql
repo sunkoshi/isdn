@@ -11,7 +11,7 @@ CREATE TABLE users (
 CREATE TABLE functions (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     creator_id INTEGER NOT NULL,
-    name TEXT,
+    name TEXT NOT NULL,
     language TEXT NOT NULL,
     timeout INTEGER NOT NULL,
     file_ref TEXT NOT NULL,

@@ -7,7 +7,6 @@ package db
 
 import (
 	"context"
-	"database/sql"
 )
 
 const createFunction = `-- name: CreateFunction :one
@@ -17,11 +16,11 @@ RETURNING id, creator_id, name, language, timeout, file_ref, created_at
 `
 
 type CreateFunctionParams struct {
-	CreatorID int64          `json:"creator_id"`
-	Name      sql.NullString `json:"name"`
-	Language  string         `json:"language"`
-	Timeout   int64          `json:"timeout"`
-	FileRef   string         `json:"file_ref"`
+	CreatorID int64  `json:"creator_id"`
+	Name      string `json:"name"`
+	Language  string `json:"language"`
+	Timeout   int64  `json:"timeout"`
+	FileRef   string `json:"file_ref"`
 }
 
 func (q *Queries) CreateFunction(ctx context.Context, arg CreateFunctionParams) (*Function, error) {
@@ -32,6 +31,80 @@ func (q *Queries) CreateFunction(ctx context.Context, arg CreateFunctionParams) 
 		arg.Timeout,
 		arg.FileRef,
 	)
+	var i Function
+	err := row.Scan(
+		&i.ID,
+		&i.CreatorID,
+		&i.Name,
+		&i.Language,
+		&i.Timeout,
+		&i.FileRef,
+		&i.CreatedAt,
+	)
+	return &i, err
+}
+
+const deleteFunctionsByIdAndCreatorId = `-- name: DeleteFunctionsByIdAndCreatorId :exec
+DELETE FROM functions
+WHERE id = ?
+    AND creator_id = ?
+`
+
+type DeleteFunctionsByIdAndCreatorIdParams struct {
+	ID        int64 `json:"id"`
+	CreatorID int64 `json:"creator_id"`
+}
+
+func (q *Queries) DeleteFunctionsByIdAndCreatorId(ctx context.Context, arg DeleteFunctionsByIdAndCreatorIdParams) error {
+	_, err := q.exec(ctx, q.deleteFunctionsByIdAndCreatorIdStmt, deleteFunctionsByIdAndCreatorId, arg.ID, arg.CreatorID)
+	return err
+}
+
+const getFunctionsByCreatorId = `-- name: GetFunctionsByCreatorId :many
+SELECT id, creator_id, name, language, timeout, file_ref, created_at
+FROM functions
+WHERE creator_id = ?
+`
+
+func (q *Queries) GetFunctionsByCreatorId(ctx context.Context, creatorID int64) ([]*Function, error) {
+	rows, err := q.query(ctx, q.getFunctionsByCreatorIdStmt, getFunctionsByCreatorId, creatorID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []*Function{}
+	for rows.Next() {
+		var i Function
+		if err := rows.Scan(
+			&i.ID,
+			&i.CreatorID,
+			&i.Name,
+			&i.Language,
+			&i.Timeout,
+			&i.FileRef,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, &i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getFunctionsById = `-- name: GetFunctionsById :one
+SELECT id, creator_id, name, language, timeout, file_ref, created_at
+FROM functions
+WHERE id = ?
+`
+
+func (q *Queries) GetFunctionsById(ctx context.Context, id int64) (*Function, error) {
+	row := q.queryRow(ctx, q.getFunctionsByIdStmt, getFunctionsById, id)
 	var i Function
 	err := row.Scan(
 		&i.ID,

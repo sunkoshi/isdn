@@ -1,0 +1,10 @@
+{
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "driver": "SQLite",
+      "database": "${workspaceFolder:bff}/db/dev.db",
+      "name": "isdn bff"
+    }
+  ]
+}

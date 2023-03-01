@@ -6,7 +6,7 @@ RETURNING *;
 SELECT *
 FROM functions
 WHERE creator_id = ?;
--- name: GetFunctionsById :one
+-- name: GetFunctionById :one
 SELECT *
 FROM functions
 WHERE id = ?;

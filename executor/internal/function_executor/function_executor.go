@@ -15,8 +15,8 @@ import (
 	"github.com/orted-org/isdn/util"
 )
 
-const BASE_DIR = "/home/hs/Documents/Projects/isdn/functions"
-const TEMPLATES_DIR = "/home/hs/Documents/Projects/isdn/templates"
+const BASE_DIR = "/home/hs/Documents/Projects/isdn/executor/functions"
+const TEMPLATES_DIR = "/home/hs/Documents/Projects/isdn/executor/templates"
 
 func New(langHandler *lang_handler.LanguageHandler, params FunctionExecutorParams) (*FunctionExecutor, error) {
 	if !langHandler.IfConfigExists(params.Language) {
@@ -54,18 +54,8 @@ func (fe *FunctionExecutor) Execute(ctx context.Context) (string, string, error)
 	return command_executor.ExecuteContext(ctx, fe.workingDirectory, executionCmd)
 }
 
-func (fe *FunctionExecutor) Run(ctx context.Context) FunctionExecutionResult {
+func (fe *FunctionExecutor) _run(ctx context.Context) FunctionExecutionResult {
 	var result FunctionExecutionResult
-	start := time.Now()
-	defer func() {
-		log.Println("cleaning resources")
-		err := fe.Clean()
-		if err != nil {
-			result.Error = fmt.Sprintf("ERROR: could not clean provisioned resources\n%s", err.Error())
-		}
-		result.ExecutionTime = time.Since(start)
-	}()
-
 	err := fe.Provision()
 	if err != nil {
 		result.Error = fmt.Sprintf("ERROR: could not provision resources\n%s", err.Error())
@@ -92,6 +82,19 @@ func (fe *FunctionExecutor) Run(ctx context.Context) FunctionExecutionResult {
 	}
 	result.Output = string(functionOutput)
 
+	return result
+}
+
+func (fe *FunctionExecutor) Run(ctx context.Context) FunctionExecutionResult {
+	start := time.Now()
+	result := fe._run(ctx)
+	log.Println("cleaning resources")
+	err := fe.Clean()
+	if err != nil {
+		result.Error = fmt.Sprintf("ERROR: could not clean provisioned resources\n%s", err.Error())
+	}
+	result.ExecutionTime = time.Since(start)
+	result.RequestID = fe.params.RequestID
 	return result
 }
 

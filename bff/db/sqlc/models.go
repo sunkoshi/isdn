@@ -18,10 +18,12 @@ type Function struct {
 	CreatedAt  time.Time `json:"created_at"`
 }
 
-type FunctionOutput struct {
+type FunctionCall struct {
 	ID         int64     `json:"id"`
 	FunctionID int64     `json:"function_id"`
 	Output     string    `json:"output"`
+	Stdout     string    `json:"stdout"`
+	Error      string    `json:"error"`
 	Cost       int64     `json:"cost"`
 	CreatedAt  time.Time `json:"created_at"`
 }

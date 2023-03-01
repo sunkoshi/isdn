@@ -60,6 +60,27 @@ func (q *Queries) DeleteFunctionsByIdAndCreatorId(ctx context.Context, arg Delet
 	return err
 }
 
+const getFunctionById = `-- name: GetFunctionById :one
+SELECT id, creator_id, name, language, timeout, output_type, created_at
+FROM functions
+WHERE id = ?
+`
+
+func (q *Queries) GetFunctionById(ctx context.Context, id int64) (*Function, error) {
+	row := q.queryRow(ctx, q.getFunctionByIdStmt, getFunctionById, id)
+	var i Function
+	err := row.Scan(
+		&i.ID,
+		&i.CreatorID,
+		&i.Name,
+		&i.Language,
+		&i.Timeout,
+		&i.OutputType,
+		&i.CreatedAt,
+	)
+	return &i, err
+}
+
 const getFunctionsByCreatorId = `-- name: GetFunctionsByCreatorId :many
 SELECT id, creator_id, name, language, timeout, output_type, created_at
 FROM functions
@@ -95,25 +116,4 @@ func (q *Queries) GetFunctionsByCreatorId(ctx context.Context, creatorID int64) 
 		return nil, err
 	}
 	return items, nil
-}
-
-const getFunctionsById = `-- name: GetFunctionsById :one
-SELECT id, creator_id, name, language, timeout, output_type, created_at
-FROM functions
-WHERE id = ?
-`
-
-func (q *Queries) GetFunctionsById(ctx context.Context, id int64) (*Function, error) {
-	row := q.queryRow(ctx, q.getFunctionsByIdStmt, getFunctionsById, id)
-	var i Function
-	err := row.Scan(
-		&i.ID,
-		&i.CreatorID,
-		&i.Name,
-		&i.Language,
-		&i.Timeout,
-		&i.OutputType,
-		&i.CreatedAt,
-	)
-	return &i, err
 }

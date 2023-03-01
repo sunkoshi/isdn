@@ -61,6 +61,11 @@ func sendResponse(rw http.ResponseWriter, status int, data interface{}, message 
 
 	rw.Write(out)
 }
+func sendHTMLResponse(rw http.ResponseWriter, status int, data string) {
+	rw.Header().Set("Content-Type", "text/html; charset=utf-8")
+	rw.WriteHeader(status)
+	rw.Write([]byte(data))
+}
 func sendErrorResponse(rw http.ResponseWriter, status int, data interface{}, message string) {
 	rw.Header().Set("Content-Type", "application/json; charset=utf-8")
 	rw.WriteHeader(status)

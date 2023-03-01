@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/orted-org/isdn/pkg/request"
 	"github.com/orted-org/isdn/util"
 )
 
@@ -23,54 +24,27 @@ func (fe *FunctionExecutor) Provision() error {
 	log.Println("creating directory at path", fe.workingDirectory)
 	err := os.MkdirAll(fe.workingDirectory, os.ModePerm)
 	if err != nil {
-		return err
+		return util.MergeErrors(errors.New("could not create dir"), err)
 	}
 
-	extension := fe.langHandler.GetExtension(fe.params.Language)
-	templateExtension := extension
-	if fe.params.IsZip {
-		extension = "zip"
-	}
+	templateExtension := fe.langHandler.GetExtension(fe.params.Language)
 
-	if fe.params.IsZip {
-		// unzip the zip file from staging to main area
-
-		tempZipPath := path.Join(BASE_DIR, "temp_zips", fmt.Sprintf("%s.%s", fe.params.RequestID, extension))
-		log.Println("creating new zip file at", tempZipPath)
-
-		b, err := io.ReadAll(fe.params.Code)
+	// if code repo provided, not go for zip copying
+	tempZipPath := path.Join(BASE_DIR, "temp_zips", fmt.Sprintf("%s.%s", fe.params.RequestID, "zip"))
+	log.Println("creating new zip file at", tempZipPath)
+	if fe.params.CodeRepo != "" {
+		err = request.Download(fe.params.CodeRepo, tempZipPath)
 		if err != nil {
-			return util.MergeErrors(errors.New("could not read zip file"), err)
-		}
-
-		// putting the file in temp area
-		err = fe.fileManger.Put(tempZipPath, b)
-		if err != nil {
-			return util.MergeErrors(errors.New("could not save zip file"), err)
-		}
-
-		// moving the file to main area
-		err = unzip(tempZipPath, fe.workingDirectory)
-		if err != nil {
-			return util.MergeErrors(errors.New("could not unzip file"), err)
-		}
-		log.Println("unzipped file at", fe.workingDirectory)
-	} else {
-		// just move code from staging to main area
-		fe.codeFilePath = path.Join(fe.workingDirectory, fmt.Sprintf("code.%s", fe.langHandler.GetExtension(fe.params.Language)))
-		log.Printf("creating FILE=%s in DIR=%s\n", fe.codeFilePath, fe.workingDirectory)
-
-		// saving file in system
-		b, err := io.ReadAll(fe.params.Code)
-		if err != nil {
-			return errors.New("could not read zip file")
-		}
-		err = fe.fileManger.Put(fe.codeFilePath, b)
-		if err != nil {
-			log.Printf("could not save file")
-			return err
+			return util.MergeErrors(errors.New("could not download code from code repo"), err)
 		}
 	}
+
+	// moving the file to main area
+	err = unzip(tempZipPath, fe.workingDirectory)
+	if err != nil {
+		return util.MergeErrors(errors.New("could not unzip file"), err)
+	}
+	log.Println("unzipped file at", fe.workingDirectory)
 
 	// copy template to working directory
 	template, err := os.ReadFile(path.Join(TEMPLATES_DIR, templateExtension, "template."+templateExtension))
@@ -110,11 +84,9 @@ func (fe *FunctionExecutor) Clean() error {
 		return err
 	}
 
-	if fe.params.IsZip {
-		err := os.RemoveAll(path.Join(BASE_DIR, "temp_zips", fe.params.RequestID+".zip"))
-		if err != nil {
-			return err
-		}
+	err = os.RemoveAll(path.Join(BASE_DIR, "temp_zips", fe.params.RequestID+".zip"))
+	if err != nil {
+		return err
 	}
 	return nil
 }

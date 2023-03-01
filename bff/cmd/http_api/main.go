@@ -6,6 +6,7 @@ import (
 	"os"
 
 	db "github.com/orted-org-isdn-bff/db/sqlc"
+	"github.com/orted-org-isdn-bff/internal/worker_manager"
 	"github.com/orted-org-isdn-bff/pkg/object_store"
 )
 
@@ -13,6 +14,7 @@ type App struct {
 	store       *db.Queries
 	kv          map[string]string
 	objectStore *object_store.ObjectStore
+	wm          *worker_manager.WorkerManager
 	logger      *log.Logger
 	quitters    map[string]chan struct{}
 	osSignal    chan os.Signal
@@ -34,6 +36,7 @@ func main() {
 
 	initDB(app)
 	initObjectStore(app)
+	initWorkerManager(app)
 	initServer(app)
 	go initCleaner(app)
 

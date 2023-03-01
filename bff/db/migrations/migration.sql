@@ -20,14 +20,15 @@ CREATE TABLE functions (
 );
 
 -- CreateTable
-CREATE TABLE function_outputs (
+CREATE TABLE function_calls (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     function_id INTEGER NOT NULL,
-    output TEXT NOT NULL,
+    output TEXT NOT NULL DEFAULT '',
+    stdout TEXT NOT NULL DEFAULT '',
+    error TEXT NOT NULL DEFAULT '',
     cost INTEGER NOT NULL DEFAULT 0,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT function_outputs_function_id_fkey FOREIGN KEY (function_id) REFERENCES functions (id) ON DELETE RESTRICT ON UPDATE CASCADE
-
+    CONSTRAINT function_calls_function_id_fkey FOREIGN KEY (function_id) REFERENCES functions (id) ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- CreateIndex

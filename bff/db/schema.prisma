@@ -39,9 +39,11 @@ model FunctionCall {
     id          Int       @id @default(autoincrement())
     function    Functions @relation(fields: [function_id], references: [id])
     function_id Int
-    output      String
+    output      String    @default("")
+    stdout      String    @default("")
+    error       String    @default("")
     cost        Int       @default(0)
     created_at  DateTime  @default(now())
 
-    @@map("function_outputs")
+    @@map("function_calls")
 }

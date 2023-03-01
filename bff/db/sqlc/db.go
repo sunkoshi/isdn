@@ -27,23 +27,29 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.createFunctionStmt, err = db.PrepareContext(ctx, createFunction); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateFunction: %w", err)
 	}
+	if q.createFunctionCallStmt, err = db.PrepareContext(ctx, createFunctionCall); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateFunctionCall: %w", err)
+	}
 	if q.createUserStmt, err = db.PrepareContext(ctx, createUser); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateUser: %w", err)
 	}
 	if q.deleteFunctionsByIdAndCreatorIdStmt, err = db.PrepareContext(ctx, deleteFunctionsByIdAndCreatorId); err != nil {
 		return nil, fmt.Errorf("error preparing query DeleteFunctionsByIdAndCreatorId: %w", err)
 	}
+	if q.getFunctionByIdStmt, err = db.PrepareContext(ctx, getFunctionById); err != nil {
+		return nil, fmt.Errorf("error preparing query GetFunctionById: %w", err)
+	}
 	if q.getFunctionsByCreatorIdStmt, err = db.PrepareContext(ctx, getFunctionsByCreatorId); err != nil {
 		return nil, fmt.Errorf("error preparing query GetFunctionsByCreatorId: %w", err)
-	}
-	if q.getFunctionsByIdStmt, err = db.PrepareContext(ctx, getFunctionsById); err != nil {
-		return nil, fmt.Errorf("error preparing query GetFunctionsById: %w", err)
 	}
 	if q.getUserStmt, err = db.PrepareContext(ctx, getUser); err != nil {
 		return nil, fmt.Errorf("error preparing query GetUser: %w", err)
 	}
 	if q.getUserByEmailStmt, err = db.PrepareContext(ctx, getUserByEmail); err != nil {
 		return nil, fmt.Errorf("error preparing query GetUserByEmail: %w", err)
+	}
+	if q.updateFunctionCallStmt, err = db.PrepareContext(ctx, updateFunctionCall); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateFunctionCall: %w", err)
 	}
 	return &q, nil
 }
@@ -53,6 +59,11 @@ func (q *Queries) Close() error {
 	if q.createFunctionStmt != nil {
 		if cerr := q.createFunctionStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing createFunctionStmt: %w", cerr)
+		}
+	}
+	if q.createFunctionCallStmt != nil {
+		if cerr := q.createFunctionCallStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createFunctionCallStmt: %w", cerr)
 		}
 	}
 	if q.createUserStmt != nil {
@@ -65,14 +76,14 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing deleteFunctionsByIdAndCreatorIdStmt: %w", cerr)
 		}
 	}
+	if q.getFunctionByIdStmt != nil {
+		if cerr := q.getFunctionByIdStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getFunctionByIdStmt: %w", cerr)
+		}
+	}
 	if q.getFunctionsByCreatorIdStmt != nil {
 		if cerr := q.getFunctionsByCreatorIdStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getFunctionsByCreatorIdStmt: %w", cerr)
-		}
-	}
-	if q.getFunctionsByIdStmt != nil {
-		if cerr := q.getFunctionsByIdStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing getFunctionsByIdStmt: %w", cerr)
 		}
 	}
 	if q.getUserStmt != nil {
@@ -83,6 +94,11 @@ func (q *Queries) Close() error {
 	if q.getUserByEmailStmt != nil {
 		if cerr := q.getUserByEmailStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getUserByEmailStmt: %w", cerr)
+		}
+	}
+	if q.updateFunctionCallStmt != nil {
+		if cerr := q.updateFunctionCallStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateFunctionCallStmt: %w", cerr)
 		}
 	}
 	return err
@@ -125,12 +141,14 @@ type Queries struct {
 	db                                  DBTX
 	tx                                  *sql.Tx
 	createFunctionStmt                  *sql.Stmt
+	createFunctionCallStmt              *sql.Stmt
 	createUserStmt                      *sql.Stmt
 	deleteFunctionsByIdAndCreatorIdStmt *sql.Stmt
+	getFunctionByIdStmt                 *sql.Stmt
 	getFunctionsByCreatorIdStmt         *sql.Stmt
-	getFunctionsByIdStmt                *sql.Stmt
 	getUserStmt                         *sql.Stmt
 	getUserByEmailStmt                  *sql.Stmt
+	updateFunctionCallStmt              *sql.Stmt
 }
 
 func (q *Queries) WithTx(tx *sql.Tx) *Queries {
@@ -138,11 +156,13 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		db:                                  tx,
 		tx:                                  tx,
 		createFunctionStmt:                  q.createFunctionStmt,
+		createFunctionCallStmt:              q.createFunctionCallStmt,
 		createUserStmt:                      q.createUserStmt,
 		deleteFunctionsByIdAndCreatorIdStmt: q.deleteFunctionsByIdAndCreatorIdStmt,
+		getFunctionByIdStmt:                 q.getFunctionByIdStmt,
 		getFunctionsByCreatorIdStmt:         q.getFunctionsByCreatorIdStmt,
-		getFunctionsByIdStmt:                q.getFunctionsByIdStmt,
 		getUserStmt:                         q.getUserStmt,
 		getUserByEmailStmt:                  q.getUserByEmailStmt,
+		updateFunctionCallStmt:              q.updateFunctionCallStmt,
 	}
 }

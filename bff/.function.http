@@ -1,4 +1,4 @@
-@token=GCoBeetMCFHHxVjDBqzgcBgRYkyhPcxR
+@token=12345
 
 ### Create Function
 POST http://localhost:4000/function
@@ -17,5 +17,16 @@ GET  http://localhost:4000/function
 Authorization: Bearer {{token}}
 
 ### Delete Function
-DELETE http://localhost:4000/function?id=2
+DELETE http://localhost:4000/function?id=1
 Authorization: Bearer {{token}}
+
+
+### Run Function
+GET http://localhost:4000/function/run/30
+Content-Type: application/json
+
+{
+    "operation":"div",
+    "a":6,
+    "b":3
+}

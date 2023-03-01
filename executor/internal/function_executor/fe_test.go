@@ -25,7 +25,6 @@ func TestFunctionExecutor(t *testing.T) {
 
 	fe, err := New(lh, FunctionExecutorParams{
 		RequestID: "1",
-		Code:      file,
 		Language:  "C++ 11",
 		Input:     "",
 	})

@@ -10,12 +10,14 @@ import (
 
 type Querier interface {
 	CreateFunction(ctx context.Context, arg CreateFunctionParams) (*Function, error)
+	CreateFunctionCall(ctx context.Context, functionID int64) (*FunctionCall, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (*User, error)
 	DeleteFunctionsByIdAndCreatorId(ctx context.Context, arg DeleteFunctionsByIdAndCreatorIdParams) error
+	GetFunctionById(ctx context.Context, id int64) (*Function, error)
 	GetFunctionsByCreatorId(ctx context.Context, creatorID int64) ([]*Function, error)
-	GetFunctionsById(ctx context.Context, id int64) (*Function, error)
 	GetUser(ctx context.Context) (*User, error)
 	GetUserByEmail(ctx context.Context, email string) (*User, error)
+	UpdateFunctionCall(ctx context.Context, arg UpdateFunctionCallParams) (*FunctionCall, error)
 }
 
 var _ Querier = (*Queries)(nil)

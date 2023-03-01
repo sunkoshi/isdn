@@ -3,7 +3,9 @@ test:
 dev:
 	go run *.go
 demo:
-	rm -rf test_codes/pym/pym.zip
-	cd ./test_codes/pym/ && zip -r pym.zip *
+	rm -rf test_codes/jsm/jsm.zip
+	cd ./test_codes/jsm/ && zip -r jsm.zip *
 	go run *.go
 	
+full:
+	go run ./cmd/function_server/*.go

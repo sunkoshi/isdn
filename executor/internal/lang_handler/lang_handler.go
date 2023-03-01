@@ -21,7 +21,7 @@ func New() (*LanguageHandler, error) {
 	}
 
 	for _, v := range configArray {
-		lh.Configs[v.Name] = v
+		lh.Configs[v.Extension] = v
 	}
 
 	return &lh, nil
@@ -72,4 +72,12 @@ func (lh *LanguageHandler) GetExecutionCmd(wDir, filename, language string) stri
 	}
 
 	return tmp
+}
+
+func (lh *LanguageHandler) GetSupportedLanguages() []string {
+	var r []string = make([]string, 0)
+	for _, v := range lh.Configs {
+		r = append(r, v.Extension)
+	}
+	return r
 }

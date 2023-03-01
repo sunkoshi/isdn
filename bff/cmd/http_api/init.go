@@ -11,6 +11,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	_ "github.com/mattn/go-sqlite3"
 	db "github.com/orted-org-isdn-bff/db/sqlc"
+	"github.com/orted-org-isdn-bff/internal/worker_manager"
 	"github.com/orted-org-isdn-bff/pkg/object_store"
 )
 
@@ -57,6 +58,10 @@ func initObjectStore(app *App) {
 		panic(err)
 	}
 	app.objectStore = os
+}
+
+func initWorkerManager(app *App) {
+	app.wm = worker_manager.New(app.store)
 }
 
 func initServer(app *App) {

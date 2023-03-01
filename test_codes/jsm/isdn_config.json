@@ -1,0 +1,7 @@
+{
+    "language": "js",
+    "name": "My Good Function",
+    "timeout": 60,
+    "isdn_url": "http://localhost:4000/function",
+    "token": "12345"
+}
